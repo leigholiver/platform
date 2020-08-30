@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+source bin/_helpers
+ensure-environment
+
+echo "🔢  Generating client certificate and config..."
+docker run --net=none --rm -it -v ${PWD}/private/ovpn0:/etc/openvpn kylemanna/openvpn:${APP_VERSION} easyrsa build-client-full ${CLIENT_NAME}
+docker run --net=none --rm -v ${PWD}/private/ovpn0:/etc/openvpn kylemanna/openvpn:${APP_VERSION} ovpn_getclient ${CLIENT_NAME} > private/${CLIENT_NAME}.ovpn

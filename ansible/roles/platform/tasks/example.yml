@@ -1,0 +1,9 @@
+---
+- name: write example manifest
+  template:
+    src: ../templates/example.yml
+    dest: $PWD/example.yml
+
+- name: apply example manifest
+  shell: microk8s kubectl apply -f $PWD/example.yml
+  when: deploy_example

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-api-key-secret
+type: Opaque
+stringData:
+  api-key: "{{ cloudflare_apikey }}"
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: letsencrypt-staging
+  namespace: default
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: "{{ cloudflare_email }}"
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+    - selector: {}
+      dns01:
+        cloudflare:
+          email: "{{ cloudflare_email }}"
+          apiKeySecretRef:
+            name: cloudflare-api-key-secret
+            key: api-key
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: letsencrypt-prod
+  namespace: default
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: "{{ cloudflare_email }}"
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - selector: {}
+      dns01:
+        cloudflare:
+          email: "{{ cloudflare_email }}"
+          apiKeySecretRef:
+            name: cloudflare-api-key-secret
+            key: api-key

@@ -1,0 +1,12 @@
+---
+- name: add openvpn helm repo
+  shell: microk8s helm repo add k8s-ovpn https://raw.githubusercontent.com/suda/k8s-ovpn-chart/master && microk8s helm repo update
+
+- name: install openvpn helm chart
+  shell: microk8s helm install --name openvpn k8s-ovpn/k8s-ovpn-chart
+  register: command_result
+  ignore_errors: True
+
+- fail:
+    msg: command_result.stderr
+  when: "command_result.stderr != '' and command_result.stderr is not match('Error: a release named openvpn already exists.*')"

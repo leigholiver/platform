@@ -1,0 +1,28 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+
+  vars:
+    - deploy_example: false
+
+    # domain name to deploy to
+    - domain_name: "{{ lookup('env','TF_VAR_domain_name') }}"
+
+    # cloudflare auth for externaldns and cert-manager
+    - cloudflare_email:  "{{ lookup('env','TF_VAR_cloudflare_email') }}"
+    - cloudflare_apikey: "{{ lookup('env','TF_VAR_cloudflare_apikey') }}"
+
+    # github username and repo info for flux cd
+    - github_username: "{{ lookup('env','GITHUB_USERNAME') }}"
+    - github_repo:     "{{ lookup('env','GITHUB_REPO') }}"
+    - github_branch:   "{{ lookup('env','GITHUB_BRANCH') }}"
+
+    # comma seperated list of directories in the github repo to watch
+    - github_namespaces: "{{ lookup('env','GITHUB_NAMESPACES') }}"
+
+  roles:
+    - microk8s
+    - platform
+    - openvpn

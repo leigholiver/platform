@@ -1,0 +1,14 @@
+---
+# readme or `./templates/example.yml` to see how to use these
+
+# externaldns, to automatically create dns records for ingresses
+- import_tasks: "{{ role_path }}/tasks/externaldns.yml"
+
+# cert-manager, to automatically create ssl certificates for ingresses
+- import_tasks: "{{ role_path }}/tasks/cert-manager.yml"
+
+# flux cd, to manage deployments from a git repo as source of truth
+- import_tasks: "{{ role_path }}/tasks/flux.yml"
+
+# example service to ensure everything is working correctly
+- import_tasks: "{{ role_path }}/tasks/example.yml"

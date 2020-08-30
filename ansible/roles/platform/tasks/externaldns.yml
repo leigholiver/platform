@@ -1,0 +1,13 @@
+---
+- name: write externaldns manifest
+  template:
+    src: ../templates/externaldns.yml
+    dest: $PWD/externaldns.yml
+
+- name: apply externaldns manifest
+  shell: microk8s kubectl apply -f $PWD/externaldns.yml
+
+- name: remove tmp externaldns manifest
+  file:
+    path: $PWD/externaldns.yml
+    state: absent

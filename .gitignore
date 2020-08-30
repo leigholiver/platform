@@ -1,0 +1,5 @@
+.terraform*
+.env
+state.tfvars
+private/*
+!private/.gitignore

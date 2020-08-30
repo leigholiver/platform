@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+ensure-environment() {
+    APP_VERSION=2.3
+    NAMESPACE=ovpn
+    CLIENT_NAME=${CLIENT_NAME:=client}
+    VPN_HOSTNAME=$TF_VAR_domain_name
+    VPN_PORT=31304
+    DNS_SERVER=1.1.1.1
+    VPN_PROTOCOL=tcp
+    VPN_URI=${VPN_PROTOCOL}://${VPN_HOSTNAME}:${VPN_PORT}
+}
