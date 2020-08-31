@@ -19,20 +19,8 @@
 - name: enable microk8s services
   shell: microk8s enable dns helm
 
-# https://github.com/ubuntu/microk8s/blob/0b22fbb8fb44fdf673698c4703496a5235fc9d3f/microk8s-resources/actions/ingress.yaml
-# with `--publish-status-address={{ inventory_hostname }}` arg added
-- name: enable munged microk8s ingress, allowing external access
-  template:
-    src: ../templates/ingress.yml
-    dest: $PWD/ingress.yml
-
-- name: apply microk8s ingress manifest
-  shell: microk8s kubectl apply -f $PWD/ingress.yml
-
-- name: remove tmp microk8s ingress manifest
-  file:
-    path: $PWD/ingress.yml
-    state: absent
+- name: microk8s tweaks
+  import_tasks: "{{ role_path }}/tasks/modifications.yml"
 
 - name: generate kubeconfig
   shell: microk8s config > $PWD/kubeconfig
@@ -41,7 +29,7 @@
   replace:
     path: $PWD/kubeconfig
     regexp: "server: https://[0-9\\.]+:16443"
-    replace: "server: https://{{ ansible_host }}:16443"
+    replace: "server: https://{{ external_ip }}:16443"
 
 - fetch:
     src: $PWD/kubeconfig
@@ -51,11 +39,23 @@
     path: $PWD/kubeconfig
     state: absent
 
-# Workaround to be able to connect to microk8s remotely
-- import_tasks: "{{ role_path }}/tasks/remote-hacks.yml"
-
 - name: helm init
   shell: microk8s helm init
 
 - name: ensure coredns has started...
   shell: microk8s kubectl rollout status deployment/coredns -n kube-system
+
+- name: write new-relic agent manifest
+  template:
+    src: ../templates/newrelic.yml
+    dest: $PWD/newrelic.yml
+  when: newrelic_license_key != ""
+
+- name: apply newrelic manifest
+  shell: microk8s kubectl apply -f $PWD/newrelic.yml
+  when: newrelic_license_key != ""
+
+- name: remove newrelic manifest
+  file:
+    path: $PWD/newrelic.yml
+    state: absent

@@ -1,0 +1,38 @@
+---
+# https://github.com/ubuntu/microk8s/blob/0b22fbb8fb44fdf673698c4703496a5235fc9d3f/microk8s-resources/actions/ingress.yaml
+# with `--publish-status-address={{ inventory_hostname }}` arg added
+- name: enable munged microk8s ingress, allowing external access
+  template:
+    src: ../templates/ingress.yml
+    dest: $PWD/ingress.yml
+
+- name: apply microk8s ingress manifest
+  shell: microk8s kubectl apply -f $PWD/ingress.yml
+
+- name: remove tmp microk8s ingress manifest
+  file:
+    path: $PWD/ingress.yml
+    state: absent
+
+- name: workaround to be able to connect to microk8s remotely
+  import_tasks: "{{ role_path }}/tasks/remote-hacks.yml"
+
+- name: check if allow-privileged is already set
+  shell: "cat /var/snap/microk8s/current/args/kube-apiserver | grep 'allow-privileged' | wc -l"
+  register: ip_included
+  changed_when: False
+
+- name: allow privileged (for newrelic agent)
+  shell: echo -n "--allow-privileged" >> /var/snap/microk8s/current/args/kube-apiserver
+  when: ip_included.stdout_lines[0]|int == 0
+
+- name: stop microk8s
+  shell: microk8s stop
+  when: ip_included.stdout_lines[0]|int == 0
+
+- name: restart microk8s
+  shell: microk8s start
+  when: ip_included.stdout_lines[0]|int == 0
+
+- name: wait for microk8s to become ready...
+  shell: microk8s status --wait-ready
