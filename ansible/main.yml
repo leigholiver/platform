@@ -8,21 +8,33 @@
     - deploy_example: false
 
     # domain name to deploy to
-    - domain_name: "{{ lookup('env','TF_VAR_domain_name') }}"
+    - domain_name:          "{{ lookup('env','TF_VAR_domain_name') }}"
+
+    # newrelic license key for monitoring
+    - newrelic_license_key: "{{ lookup('env','NEWRELIC_LICENSE_KEY') }}"
 
     # cloudflare auth for externaldns and cert-manager
-    - cloudflare_email:  "{{ lookup('env','TF_VAR_cloudflare_email') }}"
-    - cloudflare_apikey: "{{ lookup('env','TF_VAR_cloudflare_apikey') }}"
+    - cloudflare_email:     "{{ lookup('env','TF_VAR_cloudflare_email') }}"
+    - cloudflare_apikey:    "{{ lookup('env','TF_VAR_cloudflare_apikey') }}"
 
     # github username and repo info for flux cd
-    - github_username: "{{ lookup('env','GITHUB_USERNAME') }}"
-    - github_repo:     "{{ lookup('env','GITHUB_REPO') }}"
-    - github_branch:   "{{ lookup('env','GITHUB_BRANCH') }}"
+    - github_username:       "{{ lookup('env','GITHUB_USERNAME') }}"
+    - github_repo:           "{{ lookup('env','GITHUB_REPO') }}"
+    - github_branch:         "{{ lookup('env','GITHUB_BRANCH') }}"
 
     # comma seperated list of directories in the github repo to watch
-    - github_namespaces: "{{ lookup('env','GITHUB_NAMESPACES') }}"
+    - github_namespaces:     "{{ lookup('env','GITHUB_NAMESPACES') }}"
 
   roles:
     - microk8s
     - platform
     - openvpn
+
+  pre_tasks:
+    - name: set external ip address host fact
+      uri:
+        url: http://icanhazip.com
+        return_content: yes
+      register: canhaz_output
+    - set_fact:
+        external_ip: "{{ canhaz_output.content | replace('\n', '') }}"
