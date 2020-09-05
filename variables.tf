@@ -22,3 +22,8 @@ variable "instance_name" {
   description = "Name of the instance"
   default     = "platform"
 }
+
+variable "engine" {
+  description = "Kubernetes engine to use, 'microk8s' or 'k3s'"
+  default     = "k3s"
+}

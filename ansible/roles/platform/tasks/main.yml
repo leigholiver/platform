@@ -12,3 +12,7 @@
 
 # example service to ensure everything is working correctly
 - import_tasks: "{{ role_path }}/tasks/example.yml"
+
+# newrelic agent for monitoring
+- import_tasks: "{{ role_path }}/tasks/newrelic.yml"
+  when: newrelic_license_key != ""

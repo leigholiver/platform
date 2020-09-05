@@ -5,7 +5,7 @@
     dest: $PWD/flux.yml
 
 - name: apply flux manifest
-  shell: microk8s kubectl apply -f $PWD/flux.yml
+  shell: "{{ engine }} kubectl apply -f $PWD/flux.yml"
 
 - name: remove tmp flux manifest
   file:

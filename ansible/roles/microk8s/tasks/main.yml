@@ -33,29 +33,15 @@
 
 - fetch:
     src: $PWD/kubeconfig
-    dest: "{{ inventory_dir }}/../../private/"
+    dest: "{{ inventory_dir }}/../../private/kubeconfig_{{ domain_name }}"
     flat: yes
 - file:
-    path: $PWD/kubeconfig
+    path: "$PWD/kubeconfig"
     state: absent
+
 
 - name: helm init
   shell: microk8s helm init
 
 - name: ensure coredns has started...
   shell: microk8s kubectl rollout status deployment/coredns -n kube-system
-
-- name: write new-relic agent manifest
-  template:
-    src: ../templates/newrelic.yml
-    dest: $PWD/newrelic.yml
-  when: newrelic_license_key != ""
-
-- name: apply newrelic manifest
-  shell: microk8s kubectl apply -f $PWD/newrelic.yml
-  when: newrelic_license_key != ""
-
-- name: remove newrelic manifest
-  file:
-    path: $PWD/newrelic.yml
-    state: absent
