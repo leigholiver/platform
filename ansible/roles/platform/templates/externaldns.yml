@@ -60,6 +60,7 @@ spec:
         args:
         - --source=ingress
         - --provider=cloudflare
+        - --txt-owner-id={{ domain_name }}
         {% if external_dns_debug is defined and external_dns_debug %}- --log-level=debug{% endif %}
 
         env:

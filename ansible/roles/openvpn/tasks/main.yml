@@ -1,12 +1,29 @@
 ---
+- name: ensure snapd is installed
+  apt:
+    name: snapd
+    state: present
+
+- name: wait for snap to be loaded...
+  shell: snap wait system seed.loaded
+
+- name: install helm --classic
+  snap:
+    name: helm
+    classic: yes
+
 - name: add openvpn helm repo
-  shell: microk8s helm repo add k8s-ovpn https://raw.githubusercontent.com/suda/k8s-ovpn-chart/master && microk8s helm repo update
+  shell: helm repo add k8s-ovpn https://raw.githubusercontent.com/suda/k8s-ovpn-chart/master && helm repo update
+  environment:
+    KUBECONFIG: "{{ '/etc/rancher/k3s/k3s.yaml' if engine == 'k3s' else '' }}"
 
 - name: install openvpn helm chart
-  shell: microk8s helm install --name openvpn k8s-ovpn/k8s-ovpn-chart
+  shell: helm install openvpn k8s-ovpn/k8s-ovpn-chart
+  environment:
+    KUBECONFIG: "{{ '/etc/rancher/k3s/k3s.yaml' if engine == 'k3s' else '' }}"
   register: command_result
   ignore_errors: True
 
 - fail:
     msg: command_result.stderr
-  when: "command_result.stderr != '' and command_result.stderr is not match('Error: a release named openvpn already exists.*')"
+  when: "command_result.stderr != '' and command_result.stderr is not match('Error: cannot re-use a name that is still in use')"

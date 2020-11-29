@@ -38,7 +38,7 @@
 
 - fetch:
     src: $PWD/kubeconfig
-    dest: "{{ inventory_dir }}/../../private/kubeconfig_{{ domain_name }}"
+    dest: "{{ private_dir }}/kubeconfig"
     flat: yes
 - file:
     path: "$PWD/kubeconfig"

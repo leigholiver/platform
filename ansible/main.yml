@@ -8,6 +8,9 @@
     - deploy_example:     false
     - external_dns_debug: false
 
+    # local directory to store kubeconfig/openvpn config
+    - private_dir:        "{{ inventory_dir }}/../../private/{{ domain_name }}"
+
     # kubernetes to use, "k3s" or "microk8s"
     - engine:               "{{ lookup('env','TF_VAR_engine') }}"
 

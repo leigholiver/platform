@@ -48,6 +48,10 @@ resource "aws_instance" "host" {
       private_key = file(var.private_key_path)
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # provision the instance with the ansible playbook
@@ -104,7 +108,6 @@ resource "aws_security_group" "host_sec_group" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
   # outgoing traffic
   egress {
