@@ -48,6 +48,10 @@ resource "aws_instance" "host" {
       private_key = file(var.private_key_path)
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # provision the instance with the ansible playbook
@@ -91,8 +95,8 @@ resource "aws_security_group" "host_sec_group" {
 
   # kubectl
   ingress {
-    from_port   = 16443
-    to_port     = 16443
+    from_port   = var.engine == "microk8s"? 16443 : 6443
+    to_port     = var.engine == "microk8s"? 16443 : 6443
     protocol    = "tcp"
     cidr_blocks = [var.ssh_allowed_CIDR]
   }
@@ -104,7 +108,6 @@ resource "aws_security_group" "host_sec_group" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
   # outgoing traffic
   egress {

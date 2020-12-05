@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terry
+  namespace: terry
+  labels:
+    app: terry
+spec:
+  selector:
+    matchLabels:
+      app: terry
+  template:
+    metadata:
+      labels:
+        app: terry
+    spec:
+      containers:
+        - name: terry
+          image: leigholiver/terry
+          env:
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: terry-secrets
+                  key: discord

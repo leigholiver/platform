@@ -1,6 +1,6 @@
 ---
 - name: install cert-manager
-  shell: microk8s kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml
+  shell: "{{ engine }} kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml"
 
 - name: write cert-manager manifest
   template:
@@ -8,7 +8,7 @@
     dest: $PWD/cert-manager.yml
 
 - name: apply cert-manager manifest
-  shell: microk8s kubectl apply -f $PWD/cert-manager.yml
+  shell: "{{ engine }} kubectl apply -f $PWD/cert-manager.yml"
   # todo: failed calling webhook \"webhook.cert-manager.io\" connection refused?
   retries: 5
   delay: 10

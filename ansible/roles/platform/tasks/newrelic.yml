@@ -1,0 +1,13 @@
+---
+- name: write new-relic agent manifest
+  template:
+    src: ../templates/newrelic.yml
+    dest: $PWD/newrelic.yml
+
+- name: apply newrelic manifest
+  shell: "{{ engine }} kubectl apply -f $PWD/newrelic.yml"
+
+- name: remove newrelic manifest
+  file:
+    path: $PWD/newrelic.yml
+    state: absent

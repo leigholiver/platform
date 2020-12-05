@@ -1,0 +1,45 @@
+---
+- name: ensure install script exists
+  copy:
+    src: ../files/install.sh
+    dest:  $PWD/k3s-install.sh
+    mode: '0755'
+
+- name: run k3s install script, setting external ip
+  shell: INSTALL_K3S_EXEC="--tls-san {{ external_ip }} --no-deploy traefik" sh $PWD/k3s-install.sh
+
+- name: wait for node to be ready...
+  command: k3s kubectl get node
+
+# stealing the munged microk8s ingress as i cant get traefik to show the proper ip for some reason?
+# https://github.com/ubuntu/microk8s/blob/0b22fbb8fb44fdf673698c4703496a5235fc9d3f/microk8s-resources/actions/ingress.yaml
+# with `--publish-status-address={{ inventory_hostname }}` arg added
+- name: enable munged microk8s ingress, allowing external access
+  template:
+    src: ../templates/ingress.yml
+    dest: $PWD/ingress.yml
+
+- name: apply microk8s ingress manifest
+  shell: k3s kubectl apply -f $PWD/ingress.yml
+
+- name: remove tmp microk8s ingress manifest
+  file:
+    path: $PWD/ingress.yml
+    state: absent
+
+- name: copy kubeconfig
+  shell: cp /etc/rancher/k3s/k3s.yaml $PWD/kubeconfig
+
+- name: ensure external ip address is in kubeconfig
+  replace:
+    path: $PWD/kubeconfig
+    regexp: "server: https://127.0.0.1:6443"
+    replace: "server: https://{{ external_ip }}:6443"
+
+- fetch:
+    src: $PWD/kubeconfig
+    dest: "{{ private_dir }}/kubeconfig"
+    flat: yes
+- file:
+    path: "$PWD/kubeconfig"
+    state: absent

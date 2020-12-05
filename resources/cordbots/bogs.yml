@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bogs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bogs
+  namespace: bogs
+  labels:
+    app: bogs
+spec:
+  selector:
+    matchLabels:
+      app: bogs
+  template:
+    metadata:
+      labels:
+        app: bogs
+    spec:
+      containers:
+        - name: bogs
+          image: leigholiver/cryptoapi
+          env:
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bogs-secrets
+                  key: discord

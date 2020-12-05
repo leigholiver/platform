@@ -1,2 +1,5 @@
 #!/usr/bin/env bash
-KUBECONFIG=private/kubeconfig fluxctl identity --k8s-fwd-ns flux
+set -e
+source bin/_helpers
+ensure-environment
+KUBECONFIG=${PRIVATE_DIR}/kubeconfig fluxctl identity --k8s-fwd-ns flux

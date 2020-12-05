@@ -5,5 +5,5 @@
     dest: $PWD/example.yml
 
 - name: apply example manifest
-  shell: microk8s kubectl apply -f $PWD/example.yml
+  shell: "{{ engine }} kubectl apply -f $PWD/example.yml"
   when: deploy_example

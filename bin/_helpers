@@ -9,4 +9,5 @@ ensure-environment() {
     DNS_SERVER=1.1.1.1
     VPN_PROTOCOL=tcp
     VPN_URI=${VPN_PROTOCOL}://${VPN_HOSTNAME}:${VPN_PORT}
+    PRIVATE_DIR=${PWD}/private/${VPN_HOSTNAME}
 }
