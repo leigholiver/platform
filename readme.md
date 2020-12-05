@@ -9,7 +9,7 @@ my personal development platform
 ### deployment
 copy `.env.example` to `.env` and fill in the required values, then `source .env`. copy `state.tfvars.example` to `state.tfvars` and fill in the state bucket info
 
-run `terraform init -backend-config=state.tfvars` and then `terraform apply` to deploy. the instance will be provisioned via ansible and your kubeconfig will be downloaded to `private/kubeconfig`
+run `terraform init -backend-config=state.tfvars` and then `terraform apply` to deploy. the instance will be provisioned via ansible and your kubeconfig will be downloaded to `private/${hostname}/kubeconfig`
 
 ### flux cd setup
 you will need to add flux's ssh key to the github repo. get the public key using `bin/flux-identity` and add it to your repo at `https://github.com/${github_username}/${github_repo}/settings/keys`
